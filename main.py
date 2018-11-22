@@ -2,11 +2,14 @@ from flask import Flask, request, make_response, Response, jsonify, redirect, ab
 from flask_cors import CORS
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
+from flask_session import Session
 from flask_wtf import CSRFProtect
 from flask_wtf.csrf import generate_csrf
 from flask_sqlalchemy import SQLAlchemy
 from apps.home import home_blue
 from forms import addUserForm
+from config import Config
+from redis import StrictRedis
 
 app = Flask(__name__,
             static_url_path=None,  # 静态文件的访问路径，可改/test/login.html >>> 实际访问static/login.html
@@ -18,12 +21,9 @@ app = Flask(__name__,
             instance_path=None,
             instance_relative_config=False,
             root_path=None)
-app.secret_key = "demo"
+app.config.from_object(Config)
 app.register_blueprint(home_blue)
-app.config['JSON_AS_ASCII'] = False  # 返回json可显示中文
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:mysql@127.0.0.1:3306/flask"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SQLALCHEMY_ECHO"] = True
+Session(app)
 mgr = Manager(app)
 db = SQLAlchemy(app)
 Migrate(app, db)
