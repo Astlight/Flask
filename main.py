@@ -1,41 +1,17 @@
-from flask import Flask, request, make_response, Response, jsonify, redirect, abort, session, render_template, send_file
-from flask_cors import CORS
-from flask_migrate import Migrate, MigrateCommand
+from flask import request, make_response, Response, jsonify, render_template, send_file
+from flask_migrate import MigrateCommand
 from flask_script import Manager
-from flask_session import Session
-from flask_wtf import CSRFProtect
 from flask_wtf.csrf import generate_csrf
-from flask_sqlalchemy import SQLAlchemy
-from apps.home import home_blue
+from apps import create_app
 from forms import addUserForm
-from config import Config
-from redis import StrictRedis
 
-app = Flask(__name__,
-            static_url_path=None,  # 静态文件的访问路径，可改/test/login.html >>> 实际访问static/login.html
-            static_folder='static',
-            static_host=None,
-            host_matching=False,
-            subdomain_matching=False,
-            template_folder='templates',
-            instance_path=None,
-            instance_relative_config=False,
-            root_path=None)
-app.config.from_object(Config)
-app.register_blueprint(home_blue)
-Session(app)
-mgr = Manager(app)
-db = SQLAlchemy(app)
-Migrate(app, db)
-mgr.add_command("mg", MigrateCommand)
+app = create_app("dev")
+mgr = Manager(app)  # flask_script 管理
+mgr.add_command("mg", MigrateCommand)  # flask_script 管理
 # $ python main.py mg init 初始化生成文件夹
 # $ python main.py mg migrate -m "备注" . 生成表迁移版本py文件
 # $ python main.py mg upgrade .同步表结构至数据库
 # 降级有bug， 只升不降。
-
-CORS(app, supports_credentials=True)
-CSRFProtect(app)  # 对所有Post请求进行CSRF验证，从cookie和请求头中取出csrf_token, 如果失败返回拒绝访问. 必开
-
 
 @app.route('/', methods=["GET", "POST"])
 def hello_world():
