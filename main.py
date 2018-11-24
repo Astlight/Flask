@@ -113,7 +113,7 @@ def url_parameter(parameter):
 
 
 if __name__ == "__main__":
-    print(app.url_map)  # >>> Map([<Rule '/' (OPTIONS, HEAD, GET) -> hello_world>
+    # print(app.url_map)  # >>> Map([<Rule '/' (OPTIONS, HEAD, GET) -> hello_world>
     #  <Rule '/static/<filename>' (OPTIONS, HEAD, GET) -> static>])
     # app.run(host="0.0.0.0", port=5000, debug=True,load_dotenv=True)
     mgr.run()  # flask_script脚本管理 $ python main.py runserver -h 0.0.0.0 -p 5000
