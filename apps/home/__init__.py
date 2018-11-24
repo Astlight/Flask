@@ -2,7 +2,7 @@ from flask import Blueprint
 
 home_blue = Blueprint("home_blue",
                       __name__,
-                      static_folder=None, # 子应用如有单独静态文件夹，则使用。
+                      static_folder=None,  # 子应用如有单独静态文件夹，则使用。
                       static_url_path=None,
                       template_folder='templates',
                       url_prefix="/home",

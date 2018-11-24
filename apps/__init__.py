@@ -33,13 +33,13 @@ def setup_log():
 
 def create_app(config_type):
     config_class = config_dict[config_type]
-    app = Flask(__name__,
+    app = Flask(__name__,  # __name__ 定义static和templates位置
                 static_url_path=None,  # 静态文件的访问路径，可改/test/login.html >>> 实际访问static/login.html
-                static_folder='static',
+                static_folder='../static',
                 static_host=None,
                 host_matching=False,
                 subdomain_matching=False,
-                template_folder='templates',
+                template_folder='../templates',
                 instance_path=None,
                 instance_relative_config=False,
                 root_path=None)
@@ -59,5 +59,8 @@ def create_app(config_type):
 
     # 配置日志文件
     setup_log()
+
+    # 为数据迁移导入models文件
+    import models
 
     return app
