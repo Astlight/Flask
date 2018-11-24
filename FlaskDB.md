@@ -1,4 +1,5 @@
-SQLALCHEMY
+##### SQLALCHEMY
+~~~python
 user = User()
 db.session.delete(user)
 user.name = "zs"
@@ -6,6 +7,7 @@ db.session.add(user)
 db.session.commit()
 db.create_all() # 建表
 db.drop_all() # 删表
+
 
 User.query.all() # 查询所有用户数据
 User.query.count() # 查询有多少个用户
@@ -38,8 +40,9 @@ User.query.get(1)  # 获取id为1的数据
 # 分页查询, 每页3个, 查询第2页的数据
     pn = User.query.paginate(2, 3)
     pn.items 该页所有数据  pn.page 当前页码  pn.pages 总页数
-
-# Flask-PyMongo
+~~~
+##### Flask-PyMongo
+~~~python
 app.config.update(
     MONGO_URI='mongodb://localhost:27017/flask',
     MONGO_USERNAME='bjhee',
@@ -101,3 +104,4 @@ app.config.update(
     result = mongo.db.users.delete_many({'age':{'$gt':20}})
     # 打印被删除的记录数
     print('%d records deleted' % result.deleted_count)
+~~~
