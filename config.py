@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 
 from redis import StrictRedis
@@ -11,7 +12,9 @@ class Config:
     SESSION_TYPE = 'redis'
     REDIS_HOST = "127.0.0.1"
     REDIS_PORT = 6379
-    SESSION_REDIS = StrictRedis(host=REDIS_HOST, port=REDIS_PORT)
+    REDIS_DB = 0  # 普通redis存在0
+    SESSION_REDIS_DB = 3  # SESSION 存在redis db3
+    SESSION_REDIS = StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=SESSION_REDIS_DB)
     SESSION_USE_SIGNER = True  # 对Session加密
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)
     MONGO_DBNAME = 'flask'
@@ -20,13 +23,23 @@ class Config:
 
 class DevelopConfig(Config):
     DEBUG = True
+    LOGLEVEL = logging.DEBUG
 
 
 class ProductConfig(Config):
     DEBUG = True
+    LOGLEVEL = logging.ERROR
 
 
 config_dict = {
     "dev": DevelopConfig,
     "pro": ProductConfig
+}
+
+redis_cache_config = {
+    'CACHE_TYPE': 'redis',
+    'CACHE_REDIS_HOST': '127.0.0.1',
+    'CACHE_REDIS_PORT': 6379,
+    'CACHE_REDIS_DB': '1',
+    'CACHE_REDIS_PASSWORD': ''
 }

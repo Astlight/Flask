@@ -2,6 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask
+from flask_cache import Cache
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_pymongo import PyMongo
@@ -9,7 +10,7 @@ from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from redis import StrictRedis
-from config import config_dict
+from config import config_dict, redis_cache_config
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
@@ -18,12 +19,13 @@ db = None  # type: SQLAlchemy
 sr = None  # type: StrictRedis
 mongo = None  # type: PyMongo
 limiter = None  # type: Limiter
+cache = None  # type: Cache
 
 
 # 配置日志文件(将日志信息写入到文件中)
-def setup_log():
+def setup_log(LOGLEVEL):
     # 设置日志的记录等级
-    logging.basicConfig(level=logging.DEBUG)  # 调试debug级与以下都显示 # ERROR
+    logging.basicConfig(level=LOGLEVEL)  # 调试debug级 与以下都显示 # ERROR
     # 创建日志记录器，指明日志保存的路径、每个日志文件的最大大小、保存的日志文件个数上限
     file_log_handler = RotatingFileHandler("logs/log", maxBytes=1024 * 1024 * 100, backupCount=10)
     # 创建日志记录的格式 日志等级 输入日志信息的文件名 行数 日志信息
@@ -47,18 +49,19 @@ def create_app(config_type):
                 instance_relative_config=False,
                 root_path=None)
     app.config.from_object(config_class)  # 加载配置
-
     Session(app)  # 管理session
-    global db, sr, mongo, limiter
+    global db, sr, mongo, limiter, cache
+    cache = Cache(app, config=redis_cache_config)  # redis缓存
     limiter = Limiter(app=app, key_func=get_remote_address, default_limits=[
         "1000/day, 60/minute, 5/second"])  # 限流,default_limits对所有视图有效 | # @limiter.exempt  取消默认限制器 | @limiter.limit("100/day;10/hour;3/minute") 自定义视图限制器
 
     db = SQLAlchemy(app)  # 管理Mysql
-    sr = StrictRedis(host=config_class.REDIS_HOST, port=config_class.REDIS_PORT)  # 管理redis
+    sr = StrictRedis(host=config_class.REDIS_HOST, port=config_class.REDIS_PORT, db=config_class.REDIS_DB,
+                     decode_responses=True)  # 管理redis
     mongo = PyMongo(app)  # 管理mongo
     Migrate(app, db)  # 数据库迁移
     CORS(app, supports_credentials=True)  # 开启CORS跨域
-    CSRFProtect(app)  # 对所有Post请求进行CSRF验证，从cookie和请求头中取出csrf_token, 如果失败返回拒绝访问. 必开
+    # CSRFProtect(app)  # 对所有Post请求进行CSRF验证，从cookie和请求头中取出csrf_token, 如果失败返回拒绝访问. 必开
     # 注册蓝图
     from apps.home import home_blue
     app.register_blueprint(home_blue)
@@ -66,7 +69,7 @@ def create_app(config_type):
     app.register_blueprint(register_blue)
 
     # 配置日志文件
-    setup_log()
+    setup_log(config_class.LOGLEVEL)
 
     # 为数据迁移导入models文件
     import models

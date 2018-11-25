@@ -19,7 +19,7 @@ class User(BaseModel, db.Model):
     mobile = db.Column(db.String(11), unique=True, nullable=False)  # 手机号
     money = db.Column(db.Numeric(10, 2), default=0.00, nullable=False)  # 账号金额
     avatar_url = db.Column(db.String(256))  # 用户头像路径
-    last_login = db.Column(db.DateTime, default=datetime.now)  # 最后一次登录时间
+    last_login = db.Column(db.DateTime, default=datetime.now)  # 最后一次登录时间 last_login.strftime("%Y-%m-%d %H:%M:%S")
     is_admin = db.Column(db.Boolean, default=False)
     signature = db.Column(db.String(512))  # 用户签名
     gender = db.Column(  # 订单的状态

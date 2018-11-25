@@ -4,10 +4,12 @@ from datetime import datetime
 from flask import request, abort, current_app, make_response, jsonify, session
 from apps import sr, db
 from apps.register import register_blue
+from lib.yuntongxun.sms import CCP
 from models import User
 
 # 获取图片验证码
 from utils.captcha.pic_captcha import captcha
+from utils.response_code import RET, error_map
 
 
 @register_blue.route('/get_img_code')
@@ -76,9 +78,9 @@ def get_sms_code():
     # 生成4位随机数字
     sms_code = "%04d" % random.randint(0, 9999)
     current_app.logger.info("短信验证码为: %s" % sms_code)
-    # res_code = CCP().send_template_sms(mobile, [sms_code, 5], 1)
-    # if res_code == -1:  # 短信发送失败
-    #     return jsonify(errno=RET.THIRDERR, errmsg=error_map[RET.THIRDERR])
+    res_code = CCP().send_template_sms(mobile, [sms_code, 5], 1)
+    if res_code == -1:  # 短信发送失败
+        return jsonify(errno=RET.THIRDERR, errmsg=error_map[RET.THIRDERR])
 
     # 将短信验证码保存到redis
     try:
@@ -137,4 +139,51 @@ def register():
     # 状态保持  免密码登录
     session["user_id"] = user.id
 
+    return jsonify(errno=RET.OK, errmsg=error_map[RET.OK])
+
+
+# 用户登录
+@register_blue.route('/login', methods=['POST'])
+def login():
+    # 获取参数
+    mobile = request.json.get("mobile")
+    password = request.json.get("password")
+    # 校验参数
+    if not all([mobile, password]):
+        return jsonify(errno=RET.PARAMERR, errmsg=error_map[RET.PARAMERR])
+
+    # 校验手机号格式
+    if not re.match(r"1[35678]\d{9}$", mobile):
+        return jsonify(errno=RET.PARAMERR, errmsg=error_map[RET.PARAMERR])
+
+    # 根据手机号从数据库中取出用户模型
+    try:
+        user = User.query.filter_by(mobile=mobile).first()
+    except BaseException as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg=error_map[RET.DBERR])
+
+    if not user:
+        return jsonify(errno=RET.USERERR, errmsg=error_map[RET.USERERR])
+
+    # 校验密码
+    if not user.check_password(password):
+        return jsonify(errno=RET.PWDERR, errmsg=error_map[RET.PWDERR])
+
+    # 记录用户最后的登录时间
+    user.last_login = datetime.now()
+
+    # 状态保持
+    session["user_id"] = user.id
+
+    # 将校验结果以json返回
+    return jsonify(errno=RET.OK, errmsg=error_map[RET.OK])
+
+
+# 退出登录
+@register_blue.route('/logout')
+def logout():
+    # 将用户信息从session中删除  pop可以设置默认值, 当键值对不存在时, 不会报错并返回默认值
+    session.pop("user_id", None)
+    # 将结果返回
     return jsonify(errno=RET.OK, errmsg=error_map[RET.OK])

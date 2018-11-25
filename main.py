@@ -5,10 +5,11 @@ from flask_wtf.csrf import generate_csrf
 from apps import create_app
 from forms import addUserForm
 
-
 app = create_app("dev")
 mgr = Manager(app)  # flask_script 管理
 mgr.add_command("mg", MigrateCommand)  # flask_script 管理
+
+
 # $ python main.py mg init 初始化生成文件夹
 # $ python main.py mg migrate -m "备注" . 生成表迁移版本py文件
 # $ python main.py mg upgrade .同步表结构至数据库
@@ -69,30 +70,33 @@ def not_found_handler(e):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        csrf_token = generate_csrf()  # 前后端分离生成token
-        response = make_response(send_file("templates/login.html"))
-        response.set_cookie("csrf_token", csrf_token)  # == (request.headers["X-Csrftoken"])
-        # 前端 headers:{"X-CSRFToken":getCookie("csrf_token")}
+        # csrf_token = generate_csrf()  # 前后端分离生成token , the raw token in ``session['csrf_token']``
+        response = make_response(app.send_static_file("login.html"))
+        # response.set_cookie("csrf_token", csrf_token)  # == (request.headers["X-Csrftoken"])
+        # 前端 headers:{"X-CSRFToken":getCookie("csrf_token")} . CORS(app, supports_credentials=True) 自动校验
         return response
         # return render_template('login.html', form=addUserForm())  # 来返回send_file静态html，这个html不经过jinja2修饰。render_template返回后端渲染html,经过jinja2修饰
 
     elif request.method == "POST":
-        form = addUserForm()
-        if form.validate_on_submit():
-            return jsonify({
-                "status": "success",
-                "msg": "添加成功",
-                "data": {
-                    "name": form.username.data,
-                    "password": form.password.data
-                }
-            })
-            # 验证未通过
-        return jsonify({
-            "status": "failed",
-            "msg": "添加失败",
-            "error": form.errors
-        })
+        print(request.headers['X-CSRFToken'])
+        print(request.json)
+        return jsonify({'message': "ok", 'code': '200'})
+        # form = addUserForm()
+        # if form.validate_on_submit():
+        #     return jsonify({
+        #         "status": "success",
+        #         "msg": "添加成功",
+        #         "data": {
+        #             "name": form.username.data,
+        #             "password": form.password.data
+        #         }
+        #     })
+        #     # 验证未通过
+        # return jsonify({
+        #     "status": "failed",
+        #     "msg": "添加失败",
+        #     "error": form.errors
+        # })
 
 
 @app.route("/templates")

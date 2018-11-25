@@ -1,9 +1,10 @@
 from flask import render_template, session, current_app, request
 from . import home_blue
-from apps import mongo, limiter
+from apps import mongo, limiter, cache
 
 
 @home_blue.route("/index")
+@cache.cached(timeout=60 * 2)
 def index():
     try:
         print(mongo.db.flaskdemo1.find_one())  # {'_id': ObjectId('5bf77bcd8ec0c6d1c587c2c2'), 'user': 'Astlight'}

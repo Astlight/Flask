@@ -144,3 +144,14 @@ app.config.update(
     # 打印被删除的记录数
     print('%d records deleted' % result.deleted_count)
 ~~~
+##### Flask-redis
+~~~python
+sr = StrictRedis()
+# set(name, value, ex=None, px=None, nx=False, xx=False)
+# nx，如果设置为True，则只有name不存在时，当前set操作才执行
+# xx，如果设置为True，则只有name存在时，当前set操作才执行
+sr.set("img_code_id_" + 'img_code_id', 'img_code_text', ex=180)
+img_code_text = sr.get("img_code_id_" + 'img_code_id')
+sr.delete("img_code_id_" + 'img_code_id')
+
+~~~

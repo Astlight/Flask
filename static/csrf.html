@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+<form id="formdata">
+    <!--{{ form.csrf_token }}-->
+    <!--headers:{"X-CSRFToken":getCookie("csrf_token")}-->
+    <input type="submit" value="登陆" id="submit">
+</form>
+</body>
+
+<script type="text/javascript" src="./JS/jquery-1.12.4.min.js"></script>
+<script>
+    $('#submit').click(function (e) {
+        var cookie = document.cookie.split('=')[1]
+        e.preventDefault()
+        var str = {username: "csrfffff", password: "csrfffff"}
+        $.ajax({
+            url: 'http://127.0.0.1:5000/login',
+            type: 'post',
+            data: str,
+            dataType: 'json',
+            headers: {
+                "X-CSRFToken": cookie
+            },
+            success: function (info) {
+                alert(info)
+            }
+        })
+    })
+</script>
+
+</html>
