@@ -32,6 +32,29 @@ class User(BaseModel, db.Model):
 
     # print(user.addresses)  db.relationship("类名", backref="取值时的属性名add.user")
 
+
+
+    # def __init__(self, user_id=None, account_number=None, password=None, name="anonymous"):
+    #     self.user_id = user_id
+    #     self.accountNumber = account_number
+    #     self.password = password
+    #     self.name = name
+    #
+    # def is_authenticated(self):
+    #     return True
+    #
+    # def is_active(self):
+    #     return True
+    #
+    # def is_anonymous(self):
+    #     return False
+    #
+    # def get_id(self):
+    #     return self.user_id  # unicode
+    #
+    # def __repr__(self):
+    #     return '<User %r>' % (self.accountNumber)
+
     @property
     def password(self):
         raise AttributeError("该属性是计算性属性, 不能直接取值")

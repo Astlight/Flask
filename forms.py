@@ -17,6 +17,11 @@ class addUserForm(FlaskForm):
                                          Regexp(r"^[a-zA-Z]\w{5,17}$",message="以字母开头，长度在6~18之间，只能包含字母、数字和下划线"),
                                          DataRequired()])
 
+
+class LoginForm(Form):
+    accountNumber = StringField('accountNumber', validators=[DataRequired('accountNumber is null')])
+    password = PasswordField('password', validators=[DataRequired('password is null')])
+
 '''
 WTForms支持的HTML标准字段
 StringField 文本字段

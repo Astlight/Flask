@@ -16,23 +16,62 @@
 
 <script type="text/javascript" src="./JS/jquery-1.12.4.min.js"></script>
 <script>
+
+
     $('#submit').click(function (e) {
-        var cookie = document.cookie.split('=')[1]
         e.preventDefault()
-        var str = {username: "csrfffff", password: "csrfffff"}
         $.ajax({
             url: 'http://127.0.0.1:5000/login',
-            type: 'post',
-            data: str,
+            type: 'get',
+            // data: str,
             dataType: 'json',
+            success: function () {
+                alert("success")
+                var cookie = document.cookie.split('=')[1]
+                alert(cookie)
+            },
+            error: function () {
+                alert("error")
+                var cookie = document.cookie.split('=')[1]
+                alert(cookie)
+
+                $.ajax({
+                    url: "http://127.0.0.1:5000/login",
+            type: 'post',
+                    data: JSON.stringify({username: "asdfg"}),
+            dataType: 'json',
+                    contentType: 'application/json;charset=utf-8',
             headers: {
                 "X-CSRFToken": cookie
             },
-            success: function (info) {
-                alert(info)
+                    success: function () {
+                        alert("ok")
+                    },
+                    error: function () {
+                        alert("bad")
+                    }
+                })
             }
         })
     })
+
+    // $('#submit').click(function (e) {
+    //     var cookie = document.cookie.split('=')[1]
+    //     e.preventDefault()
+    //     var str = {username: "csrfffff", password: "csrfffff"}
+    //     $.ajax({
+    //         url: 'http://127.0.0.1:5000/login',
+    //         type: 'post',
+    //         data: str,
+    //         dataType: 'json',
+    //         headers: {
+    //             "X-CSRFToken": cookie
+    //         },
+    //         success: function (info) {
+    //             alert(info)
+    //         }
+    //     })
+    // })
 </script>
 
 </html>
