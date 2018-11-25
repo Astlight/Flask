@@ -10,11 +10,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from redis import StrictRedis
 from config import config_dict
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 # 数据库初始化全局
 db = None  # type: SQLAlchemy
 sr = None  # type: StrictRedis
 mongo = None  # type: PyMongo
+limiter = None  # type: Limiter
 
 
 # 配置日志文件(将日志信息写入到文件中)
@@ -46,7 +49,10 @@ def create_app(config_type):
     app.config.from_object(config_class)  # 加载配置
 
     Session(app)  # 管理session
-    global db, sr, mongo
+    global db, sr, mongo, limiter
+    limiter = Limiter(app=app, key_func=get_remote_address, default_limits=[
+        "1000/day, 60/minute, 5/second"])  # 限流,default_limits对所有视图有效 | # @limiter.exempt  取消默认限制器 | @limiter.limit("100/day;10/hour;3/minute") 自定义视图限制器
+
     db = SQLAlchemy(app)  # 管理Mysql
     sr = StrictRedis(host=config_class.REDIS_HOST, port=config_class.REDIS_PORT)  # 管理redis
     mongo = PyMongo(app)  # 管理mongo
@@ -56,6 +62,8 @@ def create_app(config_type):
     # 注册蓝图
     from apps.home import home_blue
     app.register_blueprint(home_blue)
+    from apps.register import register_blue
+    app.register_blueprint(register_blue)
 
     # 配置日志文件
     setup_log()

@@ -1,9 +1,10 @@
-from flask import request, make_response, Response, jsonify, render_template, send_file
+from flask import request, make_response, Response, jsonify, render_template, send_file, current_app
 from flask_migrate import MigrateCommand
 from flask_script import Manager
 from flask_wtf.csrf import generate_csrf
 from apps import create_app
 from forms import addUserForm
+
 
 app = create_app("dev")
 mgr = Manager(app)  # flask_script 管理
@@ -41,17 +42,28 @@ def hello_world():
 
     '''响应'''
     response = make_response("index")  # type: Response
-    return response, 700  # 返回响应对象 + 状态码
+    # return response, 700  # 返回响应对象 + 状态码
     # return 'index' # 返回字符串/bytes
-    # return jsonify(dict)  # content-type = application/json
+    return jsonify(dict)  # content-type = application/json
     # return redirect('http://www.baidu.com')  # 重定向至url
     # return redirect(url_for("index")  # 重定向至视图函数
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return current_app.send_static_file("1.bmp")
 
 
 @app.errorhandler(404)
 def not_found_handler(e):
     '''404统一处理'''
-    return "url_for 404 or static 404 html.%s" % e
+    return "url_for 404 or static 404 html. %s" % e
+
+
+@app.errorhandler(429)  # 限流捕获
+def not_found_handler(e):
+    '''404统一处理'''
+    return "flask-limiter. %s" % e
 
 
 @app.route("/login", methods=["GET", "POST"])

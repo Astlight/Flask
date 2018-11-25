@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from apps import db
 
 
@@ -27,7 +29,19 @@ class User(BaseModel, db.Model):
         ),
         default="MAN")
     addresses = db.relationship("Address", backref="user_attr")
+
     # print(user.addresses)  db.relationship("类名", backref="取值时的属性名add.user")
+
+    @property
+    def password(self):
+        raise AttributeError("该属性是计算性属性, 不能直接取值")
+
+    @password.setter
+    def password(self, value):
+        self.password_hash = generate_password_hash(value)
+
+    def check_password(self, password):  # 封装密码校验过程
+        return check_password_hash(self.password_hash, password)
 
 
 class Address(BaseModel, db.Model):
@@ -36,9 +50,8 @@ class Address(BaseModel, db.Model):
     detail = db.Column(db.String(32), unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     # add = Address(detail="Asdfg",user_id=user.id)
+    # 多对多需单独建关系表,Lazy="dynamic" 优化性能
 
-
-# 多对多需单独建关系表,Lazy="dynamic" 优化性能
 
 if __name__ == '__main__':
     pass

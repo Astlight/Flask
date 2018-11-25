@@ -1,6 +1,6 @@
-from flask import render_template, session, current_app
+from flask import render_template, session, current_app, request
 from . import home_blue
-from apps import mongo
+from apps import mongo, limiter
 
 
 @home_blue.route("/index")
@@ -10,7 +10,6 @@ def index():
         print(mongo.db.flaskdemo1.find())  # <pymongo.cursor.Cursor object at 0x0000018ECF0BBC88>
     except BaseException as e:
         current_app.logger.error("错误记录至日志及控制台: %s" % e)
-
     session['user'] = '阿斯顿发光'
     parameter = "阿斯顿发光"
     return render_template("baidu.html", parameter=parameter)
