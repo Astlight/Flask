@@ -11,12 +11,9 @@ from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from redis import StrictRedis
-
-from apps.auth import Auth
 from config import config_dict, redis_cache_config
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_jwt import JWT
 
 # 数据库初始化全局
 db = None  # type: SQLAlchemy
@@ -56,8 +53,8 @@ def create_app(config_type):
     app.config.from_object(config_class)  # 加载配置
     Session(app)  # 管理session
     global db, sr, mongo, limiter, cache, login_manager
-    auth = Auth()
-    jwt = JWT(app, auth.authenticate, auth.identity)
+    # auth = Auth()
+    # jwt = JWT(app, auth.authenticate, auth.identity)
     # login_manager = LoginManager(app)
     # login_manager.login_view = "user.login"  # 被拦截后统一跳到user/login这个路由下
     cache = Cache(app, config=redis_cache_config)  # redis缓存
