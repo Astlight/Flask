@@ -52,19 +52,6 @@ def hello_world():
 def favicon():
     return current_app.send_static_file("1.bmp")
 
-
-@app.errorhandler(404)
-def not_found_handler(e):
-    '''404统一处理'''
-    return "url_for 404 or static 404 html. %s" % e
-
-
-@app.errorhandler(429)  # 限流捕获
-def not_found_handler(e):
-    '''404统一处理'''
-    return "flask-limiter. %s" % e
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":

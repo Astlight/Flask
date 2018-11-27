@@ -7,6 +7,7 @@ from flask_cors import CORS
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_pymongo import PyMongo
+from flask_restful import Api
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
@@ -22,6 +23,7 @@ mongo = None  # type: PyMongo
 limiter = None  # type: Limiter
 cache = None  # type: Cache
 login_manager = None  # type: LoginManager
+api = None  # type:Api
 
 
 # 配置日志文件(将日志信息写入到文件中)
@@ -52,11 +54,13 @@ def create_app(config_type):
                 root_path=None)
     app.config.from_object(config_class)  # 加载配置
     Session(app)  # 管理session
-    global db, sr, mongo, limiter, cache, login_manager
+    global db, sr, mongo, limiter, cache, login_manager, api
     # auth = Auth()
     # jwt = JWT(app, auth.authenticate, auth.identity)
     # login_manager = LoginManager(app)
     # login_manager.login_view = "user.login"  # 被拦截后统一跳到user/login这个路由下
+    api = Api(app)  # restful / Resource/ api.add_resource(TodoSimple, '/<string:todo_id>')
+
     cache = Cache(app, config=redis_cache_config)  # redis缓存
     limiter = Limiter(app=app, key_func=get_remote_address, default_limits=[
         "1000/day, 60/minute, 5/second"])  # 限流,default_limits对所有视图有效 | # @limiter.exempt  取消默认限制器 | @limiter.limit("100/day;10/hour;3/minute") 自定义视图限制器
@@ -67,9 +71,10 @@ def create_app(config_type):
     mongo = PyMongo(app)  # 管理mongo
     Migrate(app, db)  # 数据库迁移
     CORS(app, supports_credentials=True)  # 开启CORS跨域
-    CSRFProtect(app)  # 对所有Post请求进行CSRF验证，从cookie和请求头中取出csrf_token, 如果失败返回拒绝访问. 必开
+    # CSRFProtect(app)  # 对所有Post请求进行CSRF验证，从cookie和请求头中取出csrf_token, 如果失败返回拒绝访问. 必开
     # 注册蓝图
     from apps.home import home_blue
+
     app.register_blueprint(home_blue)
     from apps.register import register_blue
     app.register_blueprint(register_blue)
