@@ -1,12 +1,20 @@
 # -*- coding:utf-8 -*-
+'''
+按级别分类日志器
+按[debug]、[info]、[warn]、[error]及以下 四个级别分类
+对存放在logs文件夹下文件名log_debug、log_info、log_warn、log_error
+日志格式[2018/12/07 14:08:48] [INFO] [D:\Python36\lib\site-packages\werkzeug\_internal.py:88] [ * Running on http://0.0.0.0:5003/ (Press CTRL+C to quit)]
+单个日志大小100M，最多存放10个回滚
+error级别自动发送警告邮件（需配置邮箱及smtp），同步timeout1秒
 
+'''
 import logging
-from logging.handlers import RotatingFileHandler
+from logging.handlers import RotatingFileHandler, SMTPHandler
 
 
 def setup_log():
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.ERROR)
 
     file_log_handler_info = RotatingFileHandler("logs/log_info", maxBytes=1024 * 1024 * 100, backupCount=10,
                                                 encoding='utf-8')
@@ -40,10 +48,21 @@ def setup_log():
     file_log_handler_info.setFormatter(formatter)
     file_log_handler_warn.setFormatter(formatter)
 
+    # smtp.exmail.qq.com(使用SSL，端口号465)
+    mail_handler = SMTPHandler(mailhost=("smtp.163.com", 25), # 163
+                               fromaddr='18601776432@163.com',
+                               toaddrs=['kongnanfei@hmdata.com.cn'],
+                               subject="Warnning log",
+                               credentials=('username', 'password'),
+                               timeout=1.0
+                               )
+    mail_handler.setLevel(logging.ERROR)
+
     logger.addHandler(file_log_handler_info)
     logger.addHandler(file_log_handler_debug)
     logger.addHandler(file_log_handler_warn)
     logger.addHandler(file_log_handler_error)
+    logger.addHandler(mail_handler)
     return logger
 
 
