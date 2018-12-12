@@ -18,6 +18,14 @@ Logging 下SMTPHandler本身不支持SLL，但是QQ企业邮箱需要以SSL发�
 '''
 
 
+class emial_stting():
+    mailhost = ("smtp.exmail.qq.com", 465)
+    fromaddr = 'kongnanfei@hmdata.com.cn'
+    toaddrs = ('kongnanfei@hmdata.com.cn',)
+    subject = '%s__JOB FAILED Attention__' % date.today()
+    credentials = ('kongnanfei@hmdata.com.cn', 'UDZPpcKVezjsj5yH')
+
+
 class CompatibleSMTPSSLHandler(handlers.SMTPHandler):
     """
     官方的SMTPHandler不支持SMTP_SSL的邮箱，这个可以两个都支持,并且支持邮件发送频率限制
@@ -93,6 +101,9 @@ class CompatibleSMTPSSLHandler(handlers.SMTPHandler):
 def setup_log():
     logger = logging.getLogger()
     logger.setLevel(logging.ERROR)
+    logging.basicConfig(format='[%(asctime)s] [%(levelname)s] [%(pathname)s:%(lineno)d] [%(message)s]',
+                        datefmt='%Y/%m/%d %H:%M:%S',
+                        level=logging.DEBUG)
 
     file_log_handler_info = RotatingFileHandler("logs/log_info", maxBytes=1024 * 1024 * 100, backupCount=10,
                                                 encoding='utf-8')
@@ -127,13 +138,8 @@ def setup_log():
     file_log_handler_warn.setFormatter(formatter)
 
     # smtp.exmail.qq.com(使用SSL，端口号465)
-    mail_handler = CompatibleSMTPSSLHandler(mailhost=("smtp.exmail.qq.com", 465),
-                                            fromaddr='kongnanfei@hmdata.com.cn',
-                                            toaddrs=('kongnanfei@hmdata.com.cn',),
-                                            subject='%s__JOB FAILED Attention__' % date.today(),
-                                            credentials=('kongnanfei@hmdata.com.cn', 'UDZPpcKVezjsj5yH'),
-                                            mail_time_interval=10
-                                            )
+    mail_handler = CompatibleSMTPSSLHandler(emial_stting.mailhost, emial_stting.fromaddr, emial_stting.toaddrs,
+                                            emial_stting.subject, emial_stting.credentials)
     mail_handler.setLevel(logging.ERROR)
 
     logger.addHandler(file_log_handler_info)
