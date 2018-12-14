@@ -4,13 +4,14 @@ import sys
 from datetime import date
 import time
 from logging import handlers
-from logging.handlers import RotatingFileHandler, SMTPHandler
+from logging.handlers import RotatingFileHandler
 
 '''
 按级别分类日志器
 按[debug]、[info]、[warn]、[error]及以下 四个级别分类
 对存放在logs文件夹下文件名log_debug、log_info、log_warn、log_error
-日志格式[2018/12/07 14:08:48] [INFO] [D:\Python36\lib\site-packages\werkzeug\_internal.py:88] [ * Running on http://0.0.0.0:5003/ (Press CTRL+C to quit)]
+日志格式
+    [2018/12/07 14:08:48] [INFO] [D:\Python36\lib\site-packages\werkzeug\_internal.py:88] [ * Running on http://0.0.0.0:5003/ (Press CTRL+C to quit)]
 单个日志大小100M，最多存放10个回滚
 error级别自动发送警告邮件（需配置邮箱及smtp）
 Logging 下SMTPHandler本身不支持SLL，但是QQ企业邮箱需要以SSL发送SMTP, 所以重写SMTPHandler>>>CompatibleSMTPSSLHandler
@@ -18,7 +19,7 @@ Logging 下SMTPHandler本身不支持SLL，但是QQ企业邮箱需要以SSL发�
 '''
 
 
-class emial_stting():
+class EmailSetting():
     mailhost = ("smtp.exmail.qq.com", 465)
     fromaddr = 'kongnanfei@hmdata.com.cn'
     toaddrs = ('kongnanfei@hmdata.com.cn',)
@@ -138,8 +139,8 @@ def setup_log():
     file_log_handler_warn.setFormatter(formatter)
 
     # smtp.exmail.qq.com(使用SSL，端口号465)
-    mail_handler = CompatibleSMTPSSLHandler(emial_stting.mailhost, emial_stting.fromaddr, emial_stting.toaddrs,
-                                            emial_stting.subject, emial_stting.credentials)
+    mail_handler = CompatibleSMTPSSLHandler(EmailSetting.mailhost, EmailSetting.fromaddr, EmailSetting.toaddrs,
+                                            EmailSetting.subject, EmailSetting.credentials)
     mail_handler.setLevel(logging.ERROR)
 
     logger.addHandler(file_log_handler_info)
