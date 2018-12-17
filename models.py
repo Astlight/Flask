@@ -75,6 +75,47 @@ class Address(BaseModel, db.Model):
     # add = Address(detail="Asdfg",user_id=user.id)
     # 多对多需单独建关系表,Lazy="dynamic" 优化性能
 
+class T_Bank(db.Model):
+    '''
+    银行表
+    '''
+    __tablename__ = "t_bank"
+    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True, comment="流水号")
+    name = db.Column(db.String(20), unique=True)  # 银行名
+    status = db.Column(db.Enum("0", "1"), server_default="0", nullable=False, comment="0:正常，1:冻结")  # 状态位
+    del_flg = db.Column(db.Enum("0", "9"), server_default="0", nullable=False, comment="0:有效, 9:删除")  # 删除标志位
+    created_at = db.Column(db.DateTime, server_default=text("CURRENT_TIMESTAMP"), nullable=False)  # 创建时间
+    updated_at = db.Column(db.DateTime, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+                           nullable=False)  # 更新时间
+    create_account_id = db.Column(db.Integer)  # 创建人id
+    update_account_id = db.Column(db.Integer)  # 更新人id
+
+
+class T_Ex_Quota(db.Model):
+    '''
+    对外限额表
+    '''
+    __tablename__ = "t_ex_quota"
+    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True, comment="流水号")
+    bank_id = db.Column(db.Integer, nullable=False, comment="t_bank.id")
+    pay_type = db.Column(db.Enum("1", "2", "3"), nullable=False, server_default="1",
+                         comment="1:协议代扣, 2:协议支付, 3:大额支付")  # 支付类型
+    day_max = db.Column(db.Numeric(12, 2), comment="空 没有限制")  # 单日限额
+    day_once = db.Column(db.Numeric(12, 2), comment="空 没有限制")  # 单次限额
+    service_charge_max = db.Column(db.Numeric(12, 2), comment="空 没有限制")  # 上限限额
+    service_charge_min = db.Column(db.Numeric(12, 2), comment="空 没有限制")  # 下限限额
+    fee_type = db.Column(db.Enum("1", "2", "3"), server_default="1", nullable=False,
+                         comment="1:百分比, 2:固定金额, 3:特殊规则")  # 手续费类型
+    service_charge_fee = db.Column(db.Numeric(5, 2), server_default='0.00',
+                                   comment="rate_type=1时,放费率*100后的值rate_type=2时,放固定金额")  # 手续费
+    status = db.Column(db.Enum("0", "1"), server_default="0", nullable=False, comment="0:正常，1:冻结")  # 状态位
+    del_flg = db.Column(db.Enum("0", "9"), server_default="0", nullable=False, comment="0:有效， 9:删除")  # 删除标志位
+    created_at = db.Column(db.DateTime, server_default=text("CURRENT_TIMESTAMP"), nullable=False)  # 创建时间
+    updated_at = db.Column(db.DateTime, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+                           nullable=False)  # 更新时间
+    create_account_id = db.Column(db.Integer)  # 创建人id
+    update_account_id = db.Column(db.Integer)  # 更新人id
+
 
 if __name__ == '__main__':
     pass
