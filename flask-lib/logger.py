@@ -3,8 +3,11 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
+from flask import request
+
 
 def setup_log():
+    # os.mkdir("logs") if "logs" not in os.listdir() else None
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 
@@ -72,3 +75,7 @@ if __name__ == '__main__':
     logger.debug('for debug')
     logger.error('for error')
     logger.fatal('for FATAL')
+    logger.info("{ip:%s},{url=%s},{data=%s}", request.remote_addr, request.full_path, request.json)
+    # [2018 / 12 / 14 13: 57:24] [INFO][C:\Users\HM - Python\Desktop\HMdata\server - api\api\v0\payment\views.py: 111]
+    # [{ip: 192.168.20.199}, {url = http: // 192.168.20.199: 5003 / bankrate_ex},
+    # {data = {'bank_id': 1, 'pay_type': '1', 'fee_type': '1', 'day_max': '，', 'day_once': '1','service_charge_fee': '', 'service_charge_max': '123',service_charge_min': '12345'}}]

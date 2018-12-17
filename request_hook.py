@@ -17,6 +17,18 @@ def initial():
 def prepare():
     print("每次请求前会调用, 主要完成一些准备工作, 如参数校验, 数据统计, 过滤黑名单")
 
+@app.before_request  # todo 日志记录请求参数
+def logger_setup():
+    if request.method == 'GET':
+        logger.info("{ip:%s},{url=%s},{data=%s}", request.remote_addr, request.full_path, dict(request.args))
+    if request.method == 'POST':
+        if request.json is None:
+            logger.info("{ip:%s},{url=%s},{data=%s}", request.remote_addr, request.full_path, request.json)
+            return jsonify(code_no=RET.METHODERR, code_msg=error_map[RET.METHODERR])
+        else:
+            logger.info("{ip:%s},{url=%s},{data=%s}", request.remote_addr, request.full_path, request.json)
+    return
+
 
 @app.after_request
 def process(response):  # 一旦设置该装饰器, 参数必须接收响应对象, 并且返回一个响应对象

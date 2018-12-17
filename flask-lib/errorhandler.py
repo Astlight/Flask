@@ -11,3 +11,8 @@ def not_found_handler(e):
 def not_found_handler(e):
     '''404统一处理'''
     return "flask-limiter. %s" % e
+
+# try:
+# except BaseException as e:
+# current_app.logger.error(e)
+# return jsonify(code_no=RET., code_msg=error_map[RET.])

@@ -100,6 +100,7 @@ class CompatibleSMTPSSLHandler(handlers.SMTPHandler):
 
 
 def setup_log():
+    # os.mkdir("logs") if "logs" not in os.listdir() else None
     logger = logging.getLogger()
     logger.setLevel(logging.ERROR)
     logging.basicConfig(format='[%(asctime)s] [%(levelname)s] [%(pathname)s:%(lineno)d] [%(message)s]',
