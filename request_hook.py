@@ -29,21 +29,21 @@ def err_handle(error):  # 一旦设置该装饰器, 参数必须接收错误信�
     print("每次请求后调用, 无论是否出现异常, 主要完成请求的最后处理, 如记录异常信息 %s" % error)
 
 
-@app.before_request  # todo 日志记录请求参数
+@app.before_request
 def logger_setup():
     if request.method == 'GET':
-        logger.info("请求信息:{ip:%s},{method=%s},{url=%s},{request_data=%s}", request.remote_addr, request.method, request.full_path, dict(request.args))
+        logger.info("========请求信息========:[ip=%s],[method=%s],[url=%s],[request_data=%s]", request.remote_addr, request.method, request.full_path, dict(request.args))
     if request.method == 'POST':
         if request.json == {}:
-            logger.info("请求信息:{ip:%s},{method=%s},{url=%s},{request_data=%s}", request.remote_addr, request.method,request.full_path, request.json)
-        else:
-            logger.info("请求信息:{ip:%s},{method=%s},{url=%s},{request_data=%s}", request.remote_addr, request.method,request.full_path, request.json)
+            logger.info("========请求信息========:[ip=%s],[method=%s],[url=%s],[request_data=%s]", request.remote_addr, request.method,request.full_path, request.json)
+        elif request.json is None:
+            logger.info("========请求信息========:[ip=%s],[method=%s],[url=%s],[request_data=%s]", request.remote_addr, request.method,request.full_path, request.json)
             return jsonify(code_no=RET.METHODERR, code_msg=error_map[RET.METHODERR])
     return
 
 @app.after_request
 def process(response):
-    logger.info("响应信息:{ip:%s},{method=%s},{url=%s},{response_data=%s}", request.remote_addr, request.method,request.full_path, response.data.decode())
+    logger.info("========响应信息========:[ip=%s],[method=%s],[url=%s],[response_data=%s]", request.remote_addr, request.method,request.full_path, response.data.decode())
     return response
 
 
