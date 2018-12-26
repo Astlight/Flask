@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask
-from flask_cache import Cache
+# from flask_cache import Cache
 from flask_cors import CORS
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -21,7 +21,7 @@ db = None  # type: SQLAlchemy
 sr = None  # type: StrictRedis
 mongo = None  # type: PyMongo
 limiter = None  # type: Limiter
-cache = None  # type: Cache
+# cache = None  # type: Cache
 login_manager = None  # type: LoginManager
 api = None  # type:Api
 
@@ -61,7 +61,7 @@ def create_app(config_type):
     # login_manager.login_view = "user.login"  # 被拦截后统一跳到user/login这个路由下
     api = Api(app)  # restful / Resource/ api.add_resource(TodoSimple, '/<string:todo_id>')
 
-    cache = Cache(app, config=redis_cache_config)  # redis缓存
+    # cache = Cache(app, config=redis_cache_config)  # redis缓存
     limiter = Limiter(app=app, key_func=get_remote_address, default_limits=[
         "1000/day, 60/minute, 5/second"])  # 限流,default_limits对所有视图有效 | # @limiter.exempt  取消默认限制器 | @limiter.limit("100/day;10/hour;3/minute") 自定义视图限制器
 

@@ -6,7 +6,7 @@ from redis import StrictRedis
 
 class Config:
     SECRET_KEY = "A13Nodi8EK7tlsKoaJlnwD/1VYxmC6vVk74t16s6ohrxl6kPbSNGGaN1GBYeeyEv"  # base64.b64encode(os.urandom(48))
-    SQLALCHEMY_DATABASE_URI = "mysql://root:mysql@127.0.0.1:3306/flask"
+    SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://root:mysql@127.0.0.1:3306/flask"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JSON_AS_ASCII = False  # 返回json可显示中文
     SESSION_TYPE = 'redis'

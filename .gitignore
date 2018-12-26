@@ -4,3 +4,4 @@ __pycache__/
 migrations/
 logs/log*
 lib/yuntongxun/sms.py
+flask-lib/logs

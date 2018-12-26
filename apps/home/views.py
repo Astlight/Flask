@@ -1,9 +1,9 @@
 from flask import render_template, session, current_app
 from . import home_blue
-from apps import mongo, cache
+from apps import mongo
 
 @home_blue.route("/index")
-@cache.cached(timeout=60 * 2)
+# @cache.cached(timeout=60 * 2)
 # @login_required
 def index():
     try:

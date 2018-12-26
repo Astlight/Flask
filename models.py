@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from apps import db
@@ -85,7 +86,7 @@ class T_Bank(db.Model):
     status = db.Column(db.Enum("0", "1"), server_default="0", nullable=False, comment="0:正常，1:冻结")  # 状态位
     del_flg = db.Column(db.Enum("0", "9"), server_default="0", nullable=False, comment="0:有效, 9:删除")  # 删除标志位
     created_at = db.Column(db.DateTime, server_default=text("CURRENT_TIMESTAMP"), nullable=False)  # 创建时间
-    updated_at = db.Column(db.DateTime, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+    updated_at = db.Column(db.DateTime, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT "创建时间"'),
                            nullable=False)  # 更新时间
     create_account_id = db.Column(db.Integer)  # 创建人id
     update_account_id = db.Column(db.Integer)  # 更新人id

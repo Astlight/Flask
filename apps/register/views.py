@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import request, abort, current_app, make_response, jsonify, session
 from apps import sr, db
 from apps.register import register_blue
-from lib.yuntongxun.sms import CCP
+# from lib.yuntongxun.sms import CCP
 from models import User
 
 # 获取图片验证码
@@ -77,10 +77,10 @@ def get_sms_code():
     # 如果校验成功, 发送短信
     # 生成4位随机数字
     sms_code = "%04d" % random.randint(0, 9999)
-    current_app.logger.info("短信验证码为: %s" % sms_code)
-    res_code = CCP().send_template_sms(mobile, [sms_code, 5], 1)
-    if res_code == -1:  # 短信发送失败
-        return jsonify(errno=RET.THIRDERR, errmsg=error_map[RET.THIRDERR])
+    # current_app.logger.info("短信验证码为: %s" % sms_code)
+    # res_code = CCP().send_template_sms(mobile, [sms_code, 5], 1)
+    # if res_code == -1:  # 短信发送失败
+    #     return jsonify(errno=RET.THIRDERR, errmsg=error_map[RET.THIRDERR])
 
     # 将短信验证码保存到redis
     try:
