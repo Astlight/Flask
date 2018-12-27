@@ -1,5 +1,6 @@
-# -*- coding:utf-8 -*- 
-# -*- coding: utf-8 -*-
+# -*- coding:utf-8 -*-
+from base64 import b64encode, b64decode
+
 import Crypto.Cipher as Cipher
 import Crypto.Signature as Sign
 import Crypto.Hash as Hash
@@ -112,16 +113,11 @@ class Rsa:
 
     # RSA签名验证
     def sign_verify(self, data, sig, key=None):
-        try:
-            rsa_key = self.pub_key
-            if key:
-                rsa_key = key
-            h = self.hash_lib.new(data)
-            self.sign_lib.new(rsa_key).verify(h, sig)
-            ret = True
-        except (ValueError, TypeError):
-            ret = False
-        return ret
+        rsa_key = self.pub_key
+        if key:
+            rsa_key = key
+        h = self.hash_lib.new(data)
+        return self.sign_lib.new(rsa_key).verify(h, sig)
 
 
 # ciper_lib=PKCS1_v1_5_cipper, sign_lib=PKCS1_v1_5_sign, hash_lib=SHA1,
@@ -131,9 +127,10 @@ if __name__ == '__main__':
     pri_key = RSA.importKey(open("../private_key.pem").read())
     rsa = Rsa(pub_key=pub_key, pri_key=pri_key, pub_skey=pub_key, pri_skey=pri_key)
 
-    endata = (rsa.enc_bytes(data=b"test1"))
+    endata = (rsa.enc_bytes(data=b"test"))
+    endata = b64encode(endata).decode()  # b >>> b'64' >>> 64
+    endata = b64decode(endata.encode())
     print(rsa.dec_bytes(data=endata))
 
-    ensign = (rsa.sign_bytes(data=b"test"))
-    print(ensign)
-    print(rsa.sign_verify(data=b"test", sig=ensign))
+    # ensign = (rsa.sign_bytes(data=b"test"))
+    # print(rsa.sign_verify(data=b"test", sig=ensign))
