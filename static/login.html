@@ -8,8 +8,6 @@
 
 <body>
 <form id="formdata">
-    <!--{{ form.csrf_token }}-->
-    <!--headers:{"X-CSRFToken":getCookie("csrf_token")}-->
     <label>用户名：</label><input type="text" name="username"><br/>
     <label>密码： </label><input type="password" name="password"><br/>
     <input type="submit" value="登陆" id="submit">
@@ -19,27 +17,14 @@
 <script type="text/javascript" src="static/JS/jquery-1.12.4.min.js"></script>
 <script>
     $('#submit').click(function (e) {
-        var cookie = document.cookie.split('=')[1]
-        console.log(cookie)
-        e.preventDefault()
-        var formObject = {}
-        var str = $('#formdata').serializeArray();
-        $.each(str, function (i, item) {
-            formObject[item.name] = item.value
-        })
-        var json = JSON.stringify(formObject)
-        console.log(json)
         $.ajax({
-            url: window.location.href,
+            url: url,
             type: 'post',
             data: json,
             dataType: 'json',
             contentType: 'application/json;charset=utf-8',
-            headers: {
-                "X-CSRFToken": cookie
-            },
             success: function () {
-                alert(cookie)
+                alert("ok")
             }
         })
     })

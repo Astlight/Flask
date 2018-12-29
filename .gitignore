@@ -1,6 +1,6 @@
 .idea/
 .__pycache__/
-__pycache__/
+**__pycache__/
 migrations/
 logs/log*
 lib/yuntongxun/sms.py
