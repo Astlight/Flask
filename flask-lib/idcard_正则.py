@@ -71,4 +71,4 @@ def checkIdcard(idcard):
 
 
 if __name__ == "__main__":
-    checkIdcard()
+    print(checkIdcard("31010919900808403"))
