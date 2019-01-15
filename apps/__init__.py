@@ -80,7 +80,7 @@ def create_app(config_type):
     app.register_blueprint(register_blue)
 
     # 配置日志文件
-    setup_log(config_class.LOGLEVEL)
+    # setup_log(config_class.LOGLEVEL)
 
     # 为数据迁移导入models文件
     import models

@@ -25,7 +25,7 @@ def video2imgs(video_name, size, seconds):
     cap = cv2.VideoCapture(video_name)
 
     # 帧率
-    fps = cap.get(cv2.CAP_PROP_FPS)
+    fps = cap.get(cv2.d)
     # 需要提取的帧数
     frames_count = fps * seconds
 
@@ -90,62 +90,65 @@ def imgs2chars(imgs):
     return video_chars
 
 
-# def play_video(video_chars, frames_rate):
-#     """
-#     播放字符视频，curses版
-#     :param video_chars: 字符画的列表，每个元素为一帧
-#     :param frames_rate: 帧率
-#     :return: None
-#     """
-#     # 导入需要的模块（放这里是为了演示，建议移出去）
-#     import time
-#     import curses
-#
-#     # 获取字符画的尺寸
-#     width, height = len(video_chars[0][0]), len(video_chars[0])
-#
-#     # 初始化curses，这个是必须的，直接抄就行
-#     stdscr = curses.initscr()
-#     curses.start_color()
-#     try:
-#         # 调整窗口大小，宽度最好略大于字符画宽度。另外注意curses的height和width的顺序
-#         stdscr.resize(height, width * 2)
-#
-#         for pic_i in range(len(video_chars)):
-#             # 显示 pic_i，即第i帧字符画
-#             for line_i in range(height):
-#                 # 将pic_i的第i行写入第i列。(line_i, 0)表示从第i行的开头开始写入。最后一个参数设置字符为白色
-#                 stdscr.addstr(line_i, 0, video_chars[pic_i][line_i], curses.COLOR_WHITE)
-#             stdscr.refresh()  # 写入后需要refresh才会立即更新界面
-#
-#             time.sleep(1 / frames_rate)  # 粗略地控制播放速度。
-#     finally:
-#         # curses 使用前要初始化，用完后无论有没有异常，都要关闭
-#         curses.endwin()
-#     return
-
-
 def play_video(video_chars, frames_rate):
     """
-    播放字符视频，clear版
+    播放字符视频，curses版
     :param video_chars: 字符画的列表，每个元素为一帧
     :param frames_rate: 帧率
     :return: None
     """
     # 导入需要的模块（放这里是为了演示，建议移出去）
     import time
-    import subprocess
+    import curses
 
     # 获取字符画的尺寸
+    print(len(video_chars[0][0]))
+    print(len(video_chars[0]))
+    return
     width, height = len(video_chars[0][0]), len(video_chars[0])
 
-    for pic_i in range(len(video_chars)):
-        # 显示 pic_i，即第i帧字符画
-        for line_i in range(height):
-            # 将pic_i的第i行写入第i列。
-            print(video_chars[pic_i][line_i])
-        time.sleep(1 / frames_rate)  # 粗略地控制播放速度。
-        subprocess.call("clear")
+    # 初始化curses，这个是必须的，直接抄就行
+    stdscr = curses.initscr()
+    curses.start_color()
+    try:
+        # 调整窗口大小，宽度最好略大于字符画宽度。另外注意curses的height和width的顺序
+        stdscr.resize(height, width * 2)
+
+        for pic_i in range(len(video_chars)):
+            # 显示 pic_i，即第i帧字符画
+            for line_i in range(height):
+                # 将pic_i的第i行写入第i列。(line_i, 0)表示从第i行的开头开始写入。最后一个参数设置字符为白色
+                stdscr.addstr(line_i, 0, video_chars[pic_i][line_i], curses.COLOR_WHITE)
+            stdscr.refresh()  # 写入后需要refresh才会立即更新界面
+
+            time.sleep(1 / frames_rate)  # 粗略地控制播放速度。
+    finally:
+        # curses 使用前要初始化，用完后无论有没有异常，都要关闭
+        curses.endwin()
+    return
+
+
+# def play_video(video_chars, frames_rate):
+#     """
+#     播放字符视频，clear版
+#     :param video_chars: 字符画的列表，每个元素为一帧
+#     :param frames_rate: 帧率
+#     :return: None
+#     """
+#     # 导入需要的模块（放这里是为了演示，建议移出去）
+#     import time
+#     import subprocess
+#
+#     # 获取字符画的尺寸
+#     width, height = len(video_chars[0][0]), len(video_chars[0])
+#
+#     for pic_i in range(len(video_chars)):
+#         # 显示 pic_i，即第i帧字符画
+#         for line_i in range(height):
+#             # 将pic_i的第i行写入第i列。
+#             print(video_chars[pic_i][line_i])
+#         time.sleep(1 / frames_rate)  # 粗略地控制播放速度。
+#         subprocess.call("clear")
 
 
 def dump(obj, file_name):
