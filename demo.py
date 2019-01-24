@@ -1,32 +1,17 @@
-# ！coding:utf-8
-import logging
-import logging.handlers
-import datetime, time
+from interval import Interval
+from decimal import *
 
-# logging    初始化工作
-logger = logging.getLogger("zjlogger")
-logger.setLevel(logging.DEBUG)
+# r1_top = Decimal('0').quantize(Decimal('0.00'))
+# r1_bottom = Decimal('10').quantize(Decimal('0.00'))
+# r2_top = Decimal('10').quantize(Decimal('0.00'))
+# r2_bottom = Decimal('20').quantize(Decimal('0.00'))
+# r1 = Interval(r1_top, r1_bottom)
+# r2 = Interval(r2_top, r2_bottom)
 
-# 添加TimedRotatingFileHandler
-# 定义一个1秒换一次log文件的handler
-# 保留3个旧log文件
-rf_handler = logging.handlers.TimedRotatingFileHandler(filename="all", when='D', interval=1,
-                                                       backupCount=3)
-rf_handler.suffix = "%Y-%m-%d.log"
-rf_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(filename)s[:%(lineno)d] - %(message)s"))
+r1 = Interval(0, 10)
+r2 = Interval(10, 20, lower_closed=False)
 
-# 在控制台打印日志
-handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
-handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
-
-logger.addHandler(rf_handler)
-logger.addHandler(handler)
-
-while True:
-    logger.debug('debug message')
-    logger.info('info message')
-    logger.warning('warning message')
-    logger.error('error message')
-    logger.critical('critical message')
-    time.sleep(1)
+# print(r1.overlaps(r2))
+# print(type(r1_top))
+# print(r1_top, r1_bottom, r2_top, r2_bottom)
+print(r1.adjacent_to(r2))
